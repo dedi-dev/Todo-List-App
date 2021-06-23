@@ -8,36 +8,52 @@ import TodoItemF from "./components/TodoItemF";
 
 class App extends React.Component {
   state = {
-    namaku: "Purwadhika",
-    user: {
-      username: "Username",
-      email: "user@mail.com",
-    },
-    arr: ["Apel", "Pisang", "Leci"],
     todoList: [
       { activity: "Makan", id: 1 },
       { activity: "Mandi", id: 2 },
       { activity: "Coding", id: 3 },
       { activity: "Tidur", id: 4 },
     ],
+    inputTodo: "",
+  };
+
+  deleteTodo = (id) => {
+    this.setState({
+      todoList: this.state.todoList.filter((val) => {
+        return val.id !== id;
+      }),
+    });
   };
 
   renderTodoList = () => {
     return this.state.todoList.map((val) => {
-      return <TodoItem todoData={val} />;
+      return <TodoItem deleteTodoHandler={this.deleteTodo} todoData={val} />;
     });
   };
 
+  inputHandler = (event) => {
+    this.setState({ inputTodo: event.target.value });
+  };
+
   addTodo = () => {
-    this.setState({ namaku: "Coding School" });
+    this.setState({
+      todoList: [
+        ...this.state.todoList,
+        { activity: this.state.inputTodo, id: this.state.todoList.length + 1 },
+      ],
+    });
   };
 
   render() {
     return (
       <div>
         <h1>Todo List</h1>
-        <h1>{this.state.namaku}</h1>
         {this.renderTodoList()}
+        <input
+          type="text"
+          className="mx-3"
+          onChange={this.inputHandler}
+        ></input>
         <button className="btn btn-primary" onClick={this.addTodo}>
           Add todo
         </button>
