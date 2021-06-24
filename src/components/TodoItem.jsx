@@ -1,14 +1,6 @@
 import React from "react";
 
 class TodoItem extends React.Component {
-  deleteBtnHandler() {
-    alert("Anda menekan tombol DELETE");
-  }
-
-  btnHandler(type) {
-    alert(`Anda menekan tombol ${type}`);
-  }
-
   render() {
     return (
       <div className="todo-item-container my-1 d-flex flex-row justify-content-between align-item-center">
@@ -21,10 +13,13 @@ class TodoItem extends React.Component {
             Delete
           </button>
           <button
+            disabled={this.props.todoData.isFinished}
             className="btn btn-success"
-            onClick={() => this.btnHandler("COMPLETE")}
+            onClick={() =>
+              this.props.completeTodoHandler(this.props.todoData.id)
+            }
           >
-            Complete
+            {this.props.todoData.isFinished ? "Finished" : "Complete"}
           </button>
         </div>
       </div>

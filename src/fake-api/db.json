@@ -1,0 +1,39 @@
+{
+  "todo": [
+    {
+      "isFinished": true,
+      "activity": "Makan",
+      "id": 1
+    },
+    {
+      "isFinished": false,
+      "activity": "Mandi",
+      "id": 2
+    },
+    {
+      "isFinished": true,
+      "activity": "Coding",
+      "id": 3
+    },
+    {
+      "isFinished": true,
+      "activity": "Sholat",
+      "id": 5
+    },
+    {
+      "isFinished": false,
+      "activity": "Mancing",
+      "id": 7
+    },
+    {
+      "isFinished": false,
+      "activity": "Ngaji",
+      "id": 8
+    },
+    {
+      "activity": "Belajar",
+      "isFinished": false,
+      "id": 9
+    }
+  ]
+}

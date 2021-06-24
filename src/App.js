@@ -5,29 +5,61 @@ import "./styles.css";
 import "bootstrap/dist/css/bootstrap.css";
 import TodoItem from "./components/TodoItem";
 import TodoItemF from "./components/TodoItemF";
+import Axios from "axios";
 
 class App extends React.Component {
   state = {
-    todoList: [
-      { activity: "Makan", id: 1 },
-      { activity: "Mandi", id: 2 },
-      { activity: "Coding", id: 3 },
-      { activity: "Tidur", id: 4 },
-    ],
+    todoList: [],
     inputTodo: "",
   };
 
-  deleteTodo = (id) => {
-    this.setState({
-      todoList: this.state.todoList.filter((val) => {
-        return val.id !== id;
-      }),
-    });
+  fetchTodo = () => {
+    Axios.get("http://localhost:2000/todo")
+      .then((response) => {
+        this.setState({ todoList: response.data });
+      })
+      .catch((err) => {
+        alert("Terjadi kesalahan di server");
+      });
   };
+
+  deleteTodo = (id) => {
+    Axios.delete(`http://localhost:2000/todo/${id}`)
+      .then(() => {
+        alert("Berhasil Delete Todo");
+        this.fetchTodo();
+      })
+      .catch((err) => {
+        alert("Terjadi kesalahan di server");
+      });
+  };
+
+  completeTodo = (id) => {
+    Axios.patch(`http://localhost:2000/todo/${id}`, {
+      isFinished: true,
+    })
+      .then(() => {
+        alert("Berhasil complete todo");
+        this.fetchTodo();
+      })
+      .catch((err) => {
+        alert("Terjadi kesalahan di server");
+      });
+  };
+
+  componentDidMount() {
+    this.fetchTodo();
+  }
 
   renderTodoList = () => {
     return this.state.todoList.map((val) => {
-      return <TodoItem deleteTodoHandler={this.deleteTodo} todoData={val} />;
+      return (
+        <TodoItem
+          todoData={val}
+          deleteTodoHandler={this.deleteTodo}
+          completeTodoHandler={this.completeTodo}
+        />
+      );
     });
   };
 
@@ -36,18 +68,26 @@ class App extends React.Component {
   };
 
   addTodo = () => {
-    this.setState({
-      todoList: [
-        ...this.state.todoList,
-        { activity: this.state.inputTodo, id: this.state.todoList.length + 1 },
-      ],
-    });
+    Axios.post("http://localhost:2000/todo", {
+      activity: this.state.inputTodo,
+      isFinished: false,
+    })
+      .then(() => {
+        alert("Berhasil menambahkan Todo");
+        this.fetchTodo();
+      })
+      .catch((err) => {
+        alert("Terjadi kesalahan di server");
+      });
   };
 
   render() {
     return (
       <div>
         <h1>Todo List</h1>
+        <button className="btn btn-info" onClick={this.fetchTodo}>
+          Get My Todo List
+        </button>
         {this.renderTodoList()}
         <input
           type="text"
