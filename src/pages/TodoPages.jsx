@@ -2,6 +2,13 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import TodoItem from "../components/TodoItem";
 import Axios from "axios";
+import { connect } from "react-redux";
+import {
+  incrementTodoCount,
+  decrementTodoCount,
+  changeTodoCount,
+  fetchTodoGlobal,
+} from "../redux/actions/todo";
 
 class TodoPages extends React.Component {
   state = {
@@ -13,6 +20,7 @@ class TodoPages extends React.Component {
     Axios.get("http://localhost:2000/todo")
       .then((response) => {
         this.setState({ todoList: response.data });
+        this.props.changeTodo(response.data.length);
       })
       .catch((err) => {
         alert("Terjadi kesalahan di server");
@@ -23,7 +31,7 @@ class TodoPages extends React.Component {
     Axios.delete(`http://localhost:2000/todo/${id}`)
       .then(() => {
         alert("Berhasil Delete Todo");
-        this.fetchTodo();
+        this.props.fetchTodoGlobal();
       })
       .catch((err) => {
         alert("Terjadi kesalahan di server");
@@ -36,7 +44,7 @@ class TodoPages extends React.Component {
     })
       .then(() => {
         alert("Berhasil complete todo");
-        this.fetchTodo();
+        this.props.fetchTodoGlobal();
       })
       .catch((err) => {
         alert("Terjadi kesalahan di server");
@@ -44,11 +52,12 @@ class TodoPages extends React.Component {
   };
 
   componentDidMount() {
-    this.fetchTodo();
+    // this.fetchTodo();
+    this.props.fetchTodoGlobal();
   }
 
   renderTodoList = () => {
-    return this.state.todoList.map((val) => {
+    return this.props.todoGlobalState.todoList.map((val) => {
       return (
         <TodoItem
           todoData={val}
@@ -70,7 +79,7 @@ class TodoPages extends React.Component {
     })
       .then(() => {
         alert("Berhasil menambahkan Todo");
-        this.fetchTodo();
+        this.props.fetchTodoGlobal();
       })
       .catch((err) => {
         alert("Terjadi kesalahan di server");
@@ -81,6 +90,9 @@ class TodoPages extends React.Component {
     return (
       <div>
         <h1>Todo List</h1>
+        <button onClick={this.fetchTodo()} className="btn btn-primary">
+          Get My Todo List {this.props.todoGlobalState.todoCount}
+        </button>
         {this.renderTodoList()}
         <input
           type="text"
@@ -90,9 +102,34 @@ class TodoPages extends React.Component {
         <button className="btn btn-primary" onClick={this.addTodo}>
           Add todo
         </button>
+        <button className="btn btn-warning" onClick={this.props.incrementTodo}>
+          Increment
+        </button>
+        <button className="btn btn-danger" onClick={this.props.decrementTodo}>
+          Decrement
+        </button>
+        <button
+          className="btn btn-dark"
+          onClick={() => this.props.changeTodo(7)}
+        >
+          Change
+        </button>
       </div>
     );
   }
 }
 
-export default TodoPages;
+const mapStateToProps = (state) => {
+  return {
+    todoGlobalState: state.todo,
+  };
+};
+
+const mapDispatchToProps = {
+  incrementTodo: incrementTodoCount,
+  decrementTodo: decrementTodoCount,
+  changeTodo: changeTodoCount,
+  fetchTodoGlobal,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoPages);
